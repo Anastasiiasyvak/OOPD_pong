@@ -31,42 +31,81 @@ int main() {
     userPaddle.setFillColor(sf::Color(186,22, 63 ));
     userPaddle.setPosition(VM.width - 50.0f, VM.height / 2.0f);
 
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")){
+        return EXIT_FAILURE;
+    }
+
+    sf::Text scoreText;
+    scoreText.setFont(font);
+    scoreText.setCharacterSize(30);
+    scoreText.setFillColor(sf::Color::White);
+    scoreText.setPosition(VM.width / 2.0f - 20.0f , 10.0f);
+
+
+    int userScore = 0;
+    int botScore = 0;
+
+    bool isGameOver = false;
+
     while (window.isOpen()) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             window.close();
         }
 
-        ball.move(ballSpeedX, ballSpeedY);
+        if (!isGameOver){
 
-        sf::FloatRect ballBounds = ball.getGlobalBounds();
-        sf::FloatRect botPaddleBounds = botPaddle.getGlobalBounds();
-        sf::FloatRect userPaddleBounds = userPaddle.getGlobalBounds();
 
-        if (ballBounds.intersects(botPaddleBounds) || ballBounds.intersects(userPaddleBounds)) {
-            ballSpeedX = -ballSpeedX;
+            ball.move(ballSpeedX, ballSpeedY);
+
+            sf::FloatRect ballBounds = ball.getGlobalBounds();
+            sf::FloatRect botPaddleBounds = botPaddle.getGlobalBounds();
+            sf::FloatRect userPaddleBounds = userPaddle.getGlobalBounds();
+
+            if (ballBounds.intersects(botPaddleBounds) || ballBounds.intersects(userPaddleBounds)) {
+                ballSpeedX = -ballSpeedX;
+            }
+
+            if (ball.getPosition().y < botPaddle.getPosition().y + botPaddle.getSize().y / 2.0f) {
+                botPaddle.move(0.0f, -botSpeed);
+            } else {
+                botPaddle.move(0.0f, botSpeed);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && userPaddle.getPosition().y > 0) {
+                userPaddle.move(0.0f, -userSpeed);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && userPaddle.getPosition().y + userPaddle.getSize().y < VM.height) {
+                userPaddle.move(0.0f, userSpeed);
+            }
+
+            if (ball.getPosition().x + (2 * ball.getRadius()) > VM.width || ball.getPosition().x < 0) {
+                ballSpeedX = -ballSpeedX;
+
+                if (ball.getPosition().x<0){
+                    botScore++;
+                }
+                else{
+                    userScore++;
+                }
+
+                scoreText.setString(std::to_string(userScore) + " : " + std::to_string(botScore));
+            }
+
+            if (userScore == 11 || botScore == 11) {
+                isGameOver = true;
+            }
+
+
+
+            if (ball.getPosition().y + (2 * ball.getRadius()) > VM.height || ball.getPosition().y < 0) {
+                ballSpeedY = -ballSpeedY;
+            }
+
         }
 
-        if (ball.getPosition().y < botPaddle.getPosition().y + botPaddle.getSize().y / 2.0f) {
-            botPaddle.move(0.0f, -botSpeed);
-        } else {
-            botPaddle.move(0.0f, botSpeed);
-        }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && userPaddle.getPosition().y > 0) {
-            userPaddle.move(0.0f, -userSpeed);
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && userPaddle.getPosition().y + userPaddle.getSize().y < VM.height) {
-            userPaddle.move(0.0f, userSpeed);
-        }
-
-        if (ball.getPosition().x + (2 * ball.getRadius()) > VM.width || ball.getPosition().x < 0) {
-            ballSpeedX = -ballSpeedX;
-        }
-
-        if (ball.getPosition().y + (2 * ball.getRadius()) > VM.height || ball.getPosition().y < 0) {
-            ballSpeedY = -ballSpeedY;
-        }
 
         window.clear(backgroundColor);
         window.draw(verticalLine);
@@ -74,6 +113,7 @@ int main() {
         window.draw(ball);
         window.draw(botPaddle);
         window.draw(userPaddle);
+        window.draw(scoreText);
         window.display();
     }
 
