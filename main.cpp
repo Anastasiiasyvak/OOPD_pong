@@ -9,16 +9,22 @@ int main() {
     ball.setFillColor(sf::Color(255, 140, 0));
     ball.setPosition(640, 360);
 
-    float ballSpeedX = 0.1f;
-    float ballSpeedY = 0.1f;
+    float ballSpeedX = 0.3f;
+    float ballSpeedY = 0.3f;
 
-    sf::RectangleShape verticalLine(sf::Vector2f(2.0f, VM.height)); // товщина і довжина vector2f числа параметри будуть  float
+    float botSpeed = 0.25f;
+
+    sf::RectangleShape verticalLine(sf::Vector2f(2.0f, VM.height));
     verticalLine.setFillColor(sf::Color::White);
-    verticalLine.setPosition(VM.width / 2.0f - 1.0f, 0.0f); // -1.0f, лінія її ширина, 0.0 це відступ зверху вікна
+    verticalLine.setPosition(VM.width / 2.0f, 0.0f);
 
     sf::RectangleShape horizontalLine(sf::Vector2f(VM.width, 2.0f));
     horizontalLine.setFillColor(sf::Color::White);
-    horizontalLine.setPosition(0.0f, VM.height / 2.0f - 1.0f);
+    horizontalLine.setPosition(0.0f, VM.height / 2.0f );
+
+    sf::RectangleShape botPaddle(sf::Vector2f(20.0f, 150.0f));
+    botPaddle.setFillColor(sf::Color(186, 22, 63));
+    botPaddle.setPosition(50.0f, VM.height / 2.0f);
 
     while (window.isOpen()) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
@@ -26,6 +32,19 @@ int main() {
         }
 
         ball.move(ballSpeedX, ballSpeedY);
+
+        sf::FloatRect ballBounds = ball.getGlobalBounds();
+        sf::FloatRect paddleBounds = botPaddle.getGlobalBounds();
+
+        if (ballBounds.intersects(paddleBounds)) {
+            ballSpeedX = -ballSpeedX;
+        }
+
+        if (ball.getPosition().y < botPaddle.getPosition().y + botPaddle.getSize().y / 2.0f) {
+            botPaddle.move(0.0f, -botSpeed);
+        } else {
+            botPaddle.move(0.0f, botSpeed);
+        }
 
         if (ball.getPosition().x + (2 * ball.getRadius()) > VM.width || ball.getPosition().x < 0) {
             ballSpeedX = -ballSpeedX;
@@ -39,6 +58,7 @@ int main() {
         window.draw(verticalLine);
         window.draw(horizontalLine);
         window.draw(ball);
+        window.draw(botPaddle);
         window.display();
     }
 
