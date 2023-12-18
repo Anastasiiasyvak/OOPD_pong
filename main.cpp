@@ -13,6 +13,7 @@ int main() {
     float ballSpeedY = 0.3f;
 
     float botSpeed = 0.25f;
+    float userSpeed = 0.25f;
 
     sf::RectangleShape verticalLine(sf::Vector2f(2.0f, VM.height));
     verticalLine.setFillColor(sf::Color::White);
@@ -26,6 +27,10 @@ int main() {
     botPaddle.setFillColor(sf::Color(186, 22, 63));
     botPaddle.setPosition(50.0f, VM.height / 2.0f);
 
+    sf::RectangleShape userPaddle(sf::Vector2f(20.0f,150.0f));
+    userPaddle.setFillColor(sf::Color(186,22, 63 ));
+    userPaddle.setPosition(VM.width - 50.0f, VM.height / 2.0f);
+
     while (window.isOpen()) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             window.close();
@@ -34,9 +39,10 @@ int main() {
         ball.move(ballSpeedX, ballSpeedY);
 
         sf::FloatRect ballBounds = ball.getGlobalBounds();
-        sf::FloatRect paddleBounds = botPaddle.getGlobalBounds();
+        sf::FloatRect botPaddleBounds = botPaddle.getGlobalBounds();
+        sf::FloatRect userPaddleBounds = userPaddle.getGlobalBounds();
 
-        if (ballBounds.intersects(paddleBounds)) {
+        if (ballBounds.intersects(botPaddleBounds) || ballBounds.intersects(userPaddleBounds)) {
             ballSpeedX = -ballSpeedX;
         }
 
@@ -44,6 +50,14 @@ int main() {
             botPaddle.move(0.0f, -botSpeed);
         } else {
             botPaddle.move(0.0f, botSpeed);
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && userPaddle.getPosition().y > 0) {
+            userPaddle.move(0.0f, -userSpeed);
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && userPaddle.getPosition().y + userPaddle.getSize().y < VM.height) {
+            userPaddle.move(0.0f, userSpeed);
         }
 
         if (ball.getPosition().x + (2 * ball.getRadius()) > VM.width || ball.getPosition().x < 0) {
@@ -59,6 +73,7 @@ int main() {
         window.draw(horizontalLine);
         window.draw(ball);
         window.draw(botPaddle);
+        window.draw(userPaddle);
         window.display();
     }
 
