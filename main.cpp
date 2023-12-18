@@ -18,7 +18,7 @@ int main() {
 
     sf::RectangleShape horizontalLine(sf::Vector2f(VM.width, 2.0f));
     horizontalLine.setFillColor(sf::Color::White);
-    horizontalLine.setPosition(0.0f, VM.height / 2.0f - 1.0f); 
+    horizontalLine.setPosition(0.0f, VM.height / 2.0f - 1.0f);
 
     while (window.isOpen()) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
