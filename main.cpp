@@ -9,11 +9,11 @@ int main() {
     ball.setFillColor(sf::Color(255, 140, 0));
     ball.setPosition(640, 360);
 
-    float ballSpeedX = 0.3f;
-    float ballSpeedY = 0.3f;
+    float ballSpeedX = 0.5f;
+    float ballSpeedY = 0.5f;
 
-    float botSpeed = 0.25f;
-    float userSpeed = 0.25f;
+    float botSpeed = 0.3f;
+    float userSpeed = 0.3f;
 
     sf::RectangleShape verticalLine(sf::Vector2f(2.0f, VM.height));
     verticalLine.setFillColor(sf::Color::White);
@@ -41,6 +41,12 @@ int main() {
     scoreText.setCharacterSize(30);
     scoreText.setFillColor(sf::Color::White);
     scoreText.setPosition(VM.width / 2.0f - 20.0f , 10.0f);
+
+    sf::Text resultText;
+    resultText.setFont(font);
+    resultText.setCharacterSize(40);
+    resultText.setFillColor(sf::Color::White);
+    resultText.setPosition(VM.width / 2.0f - 120.0f, VM.height / 2.0f - 20.0f);
 
 
     int userScore = 0;
@@ -95,6 +101,14 @@ int main() {
 
             if (userScore == 11 || botScore == 11) {
                 isGameOver = true;
+
+                if (userScore == 11) {
+                    resultText.setString("You lose! Press ESC to exit.");
+                } else if (botScore == 11) {
+                    resultText.setString("You win! Press ESC to exit.");
+                } else {
+                    resultText.setString("It's a draw! Press ESC to exit.");
+                }
             }
 
 
@@ -114,6 +128,7 @@ int main() {
         window.draw(botPaddle);
         window.draw(userPaddle);
         window.draw(scoreText);
+        window.draw(resultText);
         window.display();
     }
 
