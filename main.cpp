@@ -23,13 +23,13 @@ int main() {
     horizontalLine.setFillColor(sf::Color::White);
     horizontalLine.setPosition(0.0f, VM.height / 2.0f);
 
-    sf::RectangleShape botPaddle(sf::Vector2f(20.0f, 150.0f));
+    sf::RectangleShape botPaddle(sf::Vector2f(10.0f, 150.0f));
     botPaddle.setFillColor(sf::Color(186, 22, 63));
-    botPaddle.setPosition(50.0f, VM.height / 2.0f);
+    botPaddle.setPosition(25.0f, VM.height / 2.0f);
 
-    sf::RectangleShape userPaddle(sf::Vector2f(20.0f, 150.0f));
+    sf::RectangleShape userPaddle(sf::Vector2f(10.0f, 150.0f));
     userPaddle.setFillColor(sf::Color(186, 22, 63));
-    userPaddle.setPosition(VM.width - 50.0f, VM.height / 2.0f);
+    userPaddle.setPosition(VM.width - 25.0f, VM.height / 2.0f);
 
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
