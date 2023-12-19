@@ -1,19 +1,143 @@
 #include <SFML/Graphics.hpp>
 
+class Ball{
+private:
+    sf::CircleShape ball;
+    float speedX;
+    float speedY;
+public:
+    Ball() : ball(15), speedX(0.3f), speedY(0.3f){
+        ball.setFillColor(sf::Color(255, 140, 0));
+        ball.setPosition(640, 360);
+    }
+
+    void move(){
+        ball.move(speedX, speedY);
+    }
+
+    float getPositionX() const{
+        return ball.getPosition().x;
+    }
+
+    float getPositionY() const {
+        return ball.getPosition().y;
+    }
+
+    float getRadius() const {
+        return ball.getRadius();
+    }
+
+    sf::FloatRect getGlobalBounds() const {
+        return ball.getGlobalBounds();
+    }
+
+    void handleCollision(const sf::FloatRect& bounds){
+        if (bounds.intersects(getGlobalBounds())){
+            speedX = -speedX;
+        }
+    }
+
+    void reverseSpeedX() {
+        speedX = -speedX;
+    }
+
+    void reverseSpeedY(){
+        speedY = -speedY;
+    }
+
+    sf::CircleShape& getShape(){
+        return ball;
+    }
+};
+
+
+class Paddle{
+protected:
+    sf::RectangleShape paddle;
+    float speed;
+public:
+    Paddle(float width, float height, const sf::Color& color, float xPosition, float yPosition, float
+    paddleSpeed)
+    : paddle(sf::Vector2f(width, height)), speed(paddleSpeed){
+        paddle.setFillColor(color);
+        paddle.setPosition(xPosition, yPosition);
+    }
+
+    void moveUp(){
+        paddle.move(0.0f, -speed);
+    }
+     void moveDown(){
+        paddle.move(0.0f, speed);
+    }
+
+    sf::FloatRect getGlobalBounds() const {
+        return paddle.getGlobalBounds();
+    }
+
+    sf::RectangleShape& getShape() {
+        return paddle;
+    }
+
+    float getPositionY() const {
+        return paddle.getPosition().y;
+    }
+
+    float getPositionX() const {
+        return paddle.getPosition().y;
+    }
+
+    float getSizeY() const {
+        return paddle.getSize().y;
+    }
+};
+
+class BotPaddle : public Paddle{
+public:
+    BotPaddle()
+    : Paddle(10.0f, 150.0f, sf::Color(186, 22, 63), 25.0f, 720 / 2.0f, 0.25f){}
+};
+
+
+class UserPaddle: public Paddle{
+public:
+    UserPaddle()
+    : Paddle(10.0f, 150.0f, sf::Color(186, 22, 63), 1280 - 25.0f, 720 / 2.0f, 0.25f){}
+};
+
+
+class PongGame{
+
+};
+
+class Points{
+
+};
+
+class User{
+
+};
+
+class Screen{
+
+};
+
+
+class Message{
+
+};
+
+
+
 int main() {
     sf::VideoMode VM(1280, 720);
     sf::RenderWindow window(VM, "Pong game by Nastusha");
     sf::Color backgroundColor(51, 102, 200);
 
-    sf::CircleShape ball(15);
-    ball.setFillColor(sf::Color(255, 140, 0));
-    ball.setPosition(640, 360);
+    Ball ball;
+    BotPaddle botPaddle;
+    UserPaddle userPaddle;
 
-    float ballSpeedX = 0.3f;
-    float ballSpeedY = 0.3f;
 
-    float botSpeed = 0.25f;
-    float userSpeed = 0.25f;
 
     sf::RectangleShape verticalLine(sf::Vector2f(2.0f, VM.height));
     verticalLine.setFillColor(sf::Color::White);
@@ -23,13 +147,7 @@ int main() {
     horizontalLine.setFillColor(sf::Color::White);
     horizontalLine.setPosition(0.0f, VM.height / 2.0f);
 
-    sf::RectangleShape botPaddle(sf::Vector2f(10.0f, 150.0f));
-    botPaddle.setFillColor(sf::Color(186, 22, 63));
-    botPaddle.setPosition(25.0f, VM.height / 2.0f);
 
-    sf::RectangleShape userPaddle(sf::Vector2f(10.0f, 150.0f));
-    userPaddle.setFillColor(sf::Color(186, 22, 63));
-    userPaddle.setPosition(VM.width - 25.0f, VM.height / 2.0f);
 
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
@@ -108,35 +226,35 @@ int main() {
             window.draw(menuText);
         } else {
             if (!isGameOver) {
-                ball.move(ballSpeedX, ballSpeedY);
+                ball.move();
 
                 sf::FloatRect ballBounds = ball.getGlobalBounds();
                 sf::FloatRect botPaddleBounds = botPaddle.getGlobalBounds();
                 sf::FloatRect userPaddleBounds = userPaddle.getGlobalBounds();
 
                 if (ballBounds.intersects(botPaddleBounds) || ballBounds.intersects(userPaddleBounds)) {
-                    ballSpeedX = -ballSpeedX;
+                    ball.reverseSpeedX();
                 }
 
-                if (ball.getPosition().y < botPaddle.getPosition().y + botPaddle.getSize().y / 2.0f) {
-                    botPaddle.move(0.0f, -botSpeed);
+                if (ball.getPositionY() < botPaddle.getPositionY() + botPaddle.getSizeY() / 2.0f) {
+                    botPaddle.moveUp();
                 } else {
-                    botPaddle.move(0.0f, botSpeed);
+                    botPaddle.moveDown();
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && userPaddle.getPosition().y > 0) {
-                    userPaddle.move(0.0f, -userSpeed);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && userPaddle.getPositionY() > 0) {
+                    userPaddle.moveUp();
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
-                    userPaddle.getPosition().y + userPaddle.getSize().y < VM.height) {
-                    userPaddle.move(0.0f, userSpeed);
+                    userPaddle.getPositionY() + userPaddle.getSizeY() < VM.height) {
+                    userPaddle.moveDown();
                 }
 
-                if (ball.getPosition().x + (2 * ball.getRadius()) > VM.width || ball.getPosition().x < 0) {
-                    ballSpeedX = -ballSpeedX;
+                if (ball.getPositionX() + (2 * ball.getRadius()) > VM.width || ball.getPositionX() < 0) {
+                    ball.reverseSpeedX();
 
-                    if (ball.getPosition().x < 0) {
+                    if (ball.getPositionX() < 0) {
                         botScore++;
                     } else {
                         userScore++;
@@ -155,16 +273,16 @@ int main() {
                     }
                 }
 
-                if (ball.getPosition().y + (2 * ball.getRadius()) > VM.height || ball.getPosition().y < 0) {
-                    ballSpeedY = -ballSpeedY;
+                if (ball.getPositionY() + (2 * ball.getRadius()) > VM.height || ball.getPositionY() < 0) {
+                    ball.reverseSpeedY();
                 }
             }
 
             window.draw(verticalLine);
             window.draw(horizontalLine);
-            window.draw(ball);
-            window.draw(botPaddle);
-            window.draw(userPaddle);
+            window.draw(ball.getShape());
+            window.draw(botPaddle.getShape());
+            window.draw(userPaddle.getShape());
             window.draw(scoreText);
 
             if (isGameOver) {
